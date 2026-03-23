@@ -25,7 +25,6 @@ public class MovieController {
         return "Welcome to the Movie API!".toUpperCase();
     }
     
-
     @GetMapping("/movies")
     public String getMovies(@RequestParam(name = "type", defaultValue = "SINGLE") MovieType type) {
         List<Movie> movies = favoriteMovie.getMovies();

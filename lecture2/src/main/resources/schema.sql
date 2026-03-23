@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS Rooms (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    room_number VARCHAR(255) NOT NULL UNIQUE,
+    status ENUM('AVAILABLE', 'OCCUPIED') NOT NULL DEFAULT 'AVAILABLE',
+    version BIGINT NOT NULL DEFAULT 0
+);
+
+INSERT INTO Rooms (room_number) VALUES ('101'), ('102'), ('103'), ('104'), ('105'), ('106'), ('107'), ('108'), ('109');
