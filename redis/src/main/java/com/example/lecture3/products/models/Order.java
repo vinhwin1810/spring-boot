@@ -7,6 +7,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +21,7 @@ import jakarta.persistence.Enumerated;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Builder
 public class Order {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -1,6 +1,7 @@
 package com.example.lecture3.products.service;
 
 
+import java.time.Duration;
 import java.util.List;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.example.lecture3.products.models.Product;
+
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
 @Service
@@ -22,6 +25,7 @@ public class ProductService {
     private static final String REDIS_KEY = "products";
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
+    private static final  int REDIS_CACHE_TTL_MINUTES = 3;
 
     public Product createProduct(String name, Double price, Integer stock) {
         Product product = Product.builder()
@@ -31,7 +35,13 @@ public class ProductService {
                             .build();
         productRepository.save(product);
         String key = REDIS_KEY + ":" + name;
-        redisTemplate.opsForValue().set(key, objectMapper.writeValueAsString(product));
+        try {
+            String productJson = objectMapper.writeValueAsString(product);
+            redisTemplate.opsForValue().set(key, productJson, Duration.ofMinutes(REDIS_CACHE_TTL_MINUTES));
+        } catch (JacksonException e) {
+            log.error("Error caching product: {}", e.getMessage());
+            throw new RuntimeException("Error caching product: " + e.getMessage());
+        }
         return product;
 
     }
@@ -47,7 +57,7 @@ public class ProductService {
             log.info("Cache miss for product: {}", name);
             Product product = productRepository.findByName(name);
             if(product != null) {
-                redisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(product));
+                redisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(product), Duration.ofMinutes(REDIS_CACHE_TTL_MINUTES));
                 return product;
             }
             else{

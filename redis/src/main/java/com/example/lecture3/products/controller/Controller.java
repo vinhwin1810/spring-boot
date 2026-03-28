@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.example.lecture3.products.dto.CreateProductRequest;
 import com.example.lecture3.products.models.Product;
-
-
+import org.springframework.web.bind.annotation.RequestParam;
+import java.util.List;
+// import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/products")
@@ -24,13 +25,22 @@ import com.example.lecture3.products.models.Product;
 public class Controller {
     private final ProductService productService;
     @GetMapping("")
-    public ResponseEntity<String> getAllProduct(){
-        return ResponseEntity.ok(productService.getAllProducts().toString());
+    public ResponseEntity<List<Product>> getAllProduct(){
+        return ResponseEntity.ok(productService.getAllProducts());
     }
 
     @PostMapping("/create-product")
-    public ResponseEntity<String> createProduct(@RequestBody CreateProductRequest request) throws IOException {
+    public ResponseEntity<Product> createProduct(@RequestBody CreateProductRequest request) throws IOException {
         Product newProduct = productService.createProduct(request.getName(), request.getPrice(), request.getStock());
-        return ResponseEntity.status(201).body(newProduct.toString());
+        return ResponseEntity.status(201).body(newProduct);
+    }
+    @GetMapping("/search")
+    public ResponseEntity<Product> getProductByName(@RequestParam String name) {
+        try {
+            Product product = productService.getProductByName(name);
+            return ResponseEntity.ok(product);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
