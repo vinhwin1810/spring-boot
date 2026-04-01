@@ -1,10 +1,10 @@
-package com.example.lecture3;
+package com.example.redis;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.example.lecture3.products.models.Product;
-import com.example.lecture3.products.repository.ProductRepository;
+import com.example.redis.products.models.Product;
+import com.example.redis.products.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

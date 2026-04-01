@@ -1,20 +1,17 @@
-package com.example.lecture3.products.service;
+package com.example.redis.products.service;
 
 import org.springframework.stereotype.Service;
 
-import com.example.lecture3.products.repository.OrderRepository;
-import com.example.lecture3.products.repository.ProductRepository;
+import com.example.redis.products.models.Order;
+import com.example.redis.products.models.OrderStatus;
+import com.example.redis.products.models.Product;
+import com.example.redis.products.repository.OrderRepository;
+import com.example.redis.products.repository.ProductRepository;
 
 import jakarta.transaction.Transactional;
-
-import com.example.lecture3.products.models.Order;
-import com.example.lecture3.products.models.Product;
-// import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Date;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -42,8 +39,30 @@ public class OrderService {
 
         return false;
     }
-
     @Transactional
+    public Order executeOrder(Long productId, int quantity) throws InterruptedException {
+    Product product = productRepository.findById(productId)
+        .orElseThrow(() -> new RuntimeException("No product found"));
+
+    if (quantity <= 0) {
+        throw new IllegalArgumentException("Quantity must be > 0");
+    }
+    if (product.getStock() < quantity){
+        throw new RuntimeException("BRO, TOO MUCH ORDERED");
+    }
+    int newQuantity = product.getStock() - quantity;
+    product.setStock(newQuantity);
+
+    Order newOrder = Order.builder()
+        .product(product)
+        .quantity(quantity)
+        .createdAt(LocalDateTime.now())
+        .status(OrderStatus.SUCCESS)
+        .build();
+    
+    return orderRepository.save(newOrder);
+}
+
     public Order placeOrder(Long productId, int quantity) throws InterruptedException {
     String fullKey = REDIS_KEY + productId;
     Boolean canPlace = tryLock(fullKey, "IT'S LOCKED BRO, WAIT", Duration.ofSeconds(10), Duration.ofSeconds(2));
@@ -52,24 +71,12 @@ public class OrderService {
         throw new RuntimeException("TRY AGAIN LATER BRUH");
     }
     try{ 
-    Product product = productRepository.findById(productId)
-        .orElseThrow(() -> new RuntimeException("No product found"));
-
-    if (quantity <= 0) {
-        throw new IllegalArgumentException("Quantity must be > 0");
+        Order o = executeOrder(productId, quantity);
+        return o;
     }
-
-    Order newOrder = Order.builder()
-        .product(product)
-        .quantity(quantity)
-        .build();
-    
-
-    return orderRepository.save(newOrder);
-}
-finally{
-    redisTemplate.opsForValue().getAndDelete(fullKey);
-}
+    finally{
+        redisTemplate.opsForValue().getAndDelete(fullKey);
+    }
 }
 
 }

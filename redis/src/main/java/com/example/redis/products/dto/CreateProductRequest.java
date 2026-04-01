@@ -1,4 +1,4 @@
-package com.example.lecture3.products.dto;
+package com.example.redis.products.dto;
 
 import lombok.*;
 

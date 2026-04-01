@@ -1,9 +1,14 @@
-package com.example.lecture3.products.controller;
+package com.example.redis.products.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.lecture3.products.service.ProductService;
+import com.example.redis.products.dto.CreateProductRequest;
+import com.example.redis.products.dto.PlaceOrderRequest;
+import com.example.redis.products.models.Order;
+import com.example.redis.products.models.Product;
+import com.example.redis.products.service.OrderService;
+import com.example.redis.products.service.ProductService;
 
 import java.io.IOException;
 
@@ -12,9 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import lombok.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import com.example.lecture3.products.dto.CreateProductRequest;
-import com.example.lecture3.products.models.Product;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.List;
 // import org.springframework.web.bind.annotation.PathVariable;
 
@@ -24,6 +28,7 @@ import java.util.List;
 
 public class Controller {
     private final ProductService productService;
+    private final OrderService orderService;
     @GetMapping("")
     public ResponseEntity<List<Product>> getAllProduct(){
         return ResponseEntity.ok(productService.getAllProducts());
@@ -41,6 +46,16 @@ public class Controller {
             return ResponseEntity.ok(product);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/order")
+    public ResponseEntity<?> placeOrder(@RequestBody PlaceOrderRequest request) throws Exception{
+        try {
+            Order newOrder = orderService.placeOrder(request.getProductId(), request.getQuantity());
+            return ResponseEntity.status(201).body(newOrder);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

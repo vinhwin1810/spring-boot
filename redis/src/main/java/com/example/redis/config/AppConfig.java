@@ -1,14 +1,5 @@
-package com.example.lecture3.config;
-import java.time.Duration;
-
-import org.springframework.context.annotation.Bean;
+package com.example.redis.config;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 
 @Configuration
 public class AppConfig {
@@ -27,5 +18,6 @@ public class AppConfig {
     //             .cacheDefaults(config)
     //             .build();
     // }
+
 }
 

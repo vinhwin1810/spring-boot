@@ -1,4 +1,4 @@
-package com.example.lecture3.products.models;
+package com.example.redis.products.models;
 
 import java.time.LocalDateTime;
 

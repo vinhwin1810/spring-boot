@@ -1,4 +1,4 @@
-package com.example.lecture3.products.service;
+package com.example.redis.products.service;
 
 
 import java.time.Duration;
@@ -7,13 +7,11 @@ import java.util.List;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.example.lecture3.products.repository.ProductRepository;
+import com.example.redis.products.models.Product;
+import com.example.redis.products.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import com.example.lecture3.products.models.Product;
-
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
